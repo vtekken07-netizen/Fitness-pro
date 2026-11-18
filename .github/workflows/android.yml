@@ -1,0 +1,42 @@
+
+name: Build FITNESS PRO APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'FITNESS_PRO_Fresh_Download.zip'
+      - '.github/workflows/android.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Extract project
+        run: unzip -q FITNESS_PRO_Fresh_Download.zip
+
+      - name: Build APK
+        run: |
+          cd FITNESS_PRO
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FITNESS-PRO-APK
+          path: FITNESS_PRO/app/build/outputs/apk/debug/app-debug.apk
